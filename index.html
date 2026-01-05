@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>njuškalo - Higher/Lower</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Start Screen -->
+    <div id="start-screen">
+      <!-- Image above title -->
+      <div class="hero-image-container">
+        <img src="logo.png" alt="Hero Image" class="hero-image" />
+      </div>
+
+      <h1>njuškalo</h1>
+
+      <p class="subtitle split-title">
+        <span class="higher">Higher</span>
+        <span class="slash">/</span>
+        <span class="lower">Lower</span>
+      </p>
+
+      <button class="btn" onclick="startGame()">Start Game</button>
+      <p class="error-msg" id="error-msg"></p>
+    </div>
+
+    <!-- High Scores Modal -->
+    <div id="highscores-modal" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>🏆 High Scores</h2>
+          <button class="close-btn" onclick="hideHighScores()">×</button>
+        </div>
+        <div class="scores-list">
+          <div class="score-item">
+            <span class="rank">1st</span>
+            <span class="score-value" id="score-1">0</span>
+          </div>
+          <div class="score-item">
+            <span class="rank">2nd</span>
+            <span class="score-value" id="score-2">0</span>
+          </div>
+          <div class="score-item">
+            <span class="rank">3rd</span>
+            <span class="score-value" id="score-3">0</span>
+          </div>
+        </div>
+        <button class="btn reset-scores-btn" onclick="resetAllScores()">
+          🔄 Reset Scores
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" style="display: none">
+      <!-- Drumroll Animation -->
+      <div class="drumroll-container" id="drumroll-container">
+        <div class="drumroll-dots">
+          <div class="drumroll-dot"></div>
+          <div class="drumroll-dot"></div>
+          <div class="drumroll-dot"></div>
+        </div>
+        <div class="drumroll-text">Revealing...</div>
+      </div>
+
+      <!-- Checkmark/X Animation -->
+      <div class="result-animation" id="result-animation" style="display: none">
+        <div class="result-icon" id="result-icon">
+          <!-- Will be filled with SVG dynamically -->
+        </div>
+        <div class="result-text" id="result-text"></div>
+      </div>
+
+      <div class="score-container">
+        <div class="score">Score: <span id="score">0</span></div>
+        <div class="high-score">Best: <span id="high-score">0</span></div>
+      </div>
+
+      <div class="game-container">
+        <!-- Left Car -->
+        <div class="car-card left-card" id="left-card">
+          <div class="choice-overlay" onclick="makeGuess('left')">
+            <div class="choice-label">CHOOSE LEFT</div>
+          </div>
+          <div class="car-image-container">
+            <img id="left-car-image" src="" alt="Car" loading="lazy" />
+          </div>
+          <div class="car-info">
+            <div class="details-bubbles">
+              <div class="detail-bubble">
+                <span class="detail-label">Kilometers</span>
+                <span class="detail-value km" id="left-car-km">N/A</span>
+              </div>
+              <div class="detail-bubble">
+                <span class="detail-label">Year</span>
+                <span class="detail-value year" id="left-car-year">N/A</span>
+              </div>
+            </div>
+            <h2 id="left-car-name">Car Name</h2>
+            <div class="price-display" id="left-price-display">
+              <span class="price-label">Price:</span>
+              <span class="price-value" id="left-car-price">0€</span>
+            </div>
+            <div class="question-mark hidden" id="left-question-mark">?</div>
+          </div>
+          <a href="#" target="_blank" class="car-link" id="left-car-link">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"
+              />
+            </svg>
+          </a>
+        </div>
+
+        <!-- VS Divider -->
+        <div class="vs-divider" id="vs-divider">
+          <span>VS</span>
+        </div>
+
+        <!-- Right Car -->
+        <div class="car-card right-card" id="right-card">
+          <div class="choice-overlay" onclick="makeGuess('right')">
+            <div class="choice-label">CHOOSE RIGHT</div>
+          </div>
+          <div class="car-image-container">
+            <img id="right-car-image" src="" alt="Car" loading="lazy" />
+          </div>
+          <div class="car-info">
+            <div class="details-bubbles">
+              <div class="detail-bubble">
+                <span class="detail-label">Kilometers</span>
+                <span class="detail-value km" id="right-car-km">N/A</span>
+              </div>
+              <div class="detail-bubble">
+                <span class="detail-label">Year</span>
+                <span class="detail-value year" id="right-car-year">N/A</span>
+              </div>
+            </div>
+            <h2 id="right-car-name">Car Name</h2>
+            <div class="price-display hidden" id="right-price-display">
+              <span class="price-label">Price:</span>
+              <span class="price-value" id="right-car-price">0€</span>
+            </div>
+            <div class="question-mark" id="right-question-mark">?</div>
+          </div>
+          <a href="#" target="_blank" class="car-link" id="right-car-link">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" style="display: none">
+      <div class="game-over-card">
+        <div class="game-over-header">
+          <div class="game-over-icon">🎮</div>
+          <h1>Game Over!</h1>
+          <p class="game-over-subtitle">Thanks for playing!</p>
+        </div>
+
+        <div class="score-card">
+          <div class="score-card-header">
+            <div class="trophy-icon">🏆</div>
+            <h2>Your Score</h2>
+          </div>
+          <div class="final-score">
+            <span class="score-label">Final Score:</span>
+            <span class="score-value" id="final-score">0</span>
+          </div>
+          <div class="best-score">
+            <span class="score-label">Best Score:</span>
+            <span class="score-value" id="best-score-display">0</span>
+          </div>
+        </div>
+
+        <div
+          class="message-container"
+          id="high-score-msg"
+          style="display: none"
+        ></div>
+
+        <div class="button-group">
+          <button class="btn play-again-btn" onclick="resetGame()">
+            Play Again
+          </button>
+          <button class="btn home-btn" onclick="goToHome()">
+            Back to Home
+          </button>
+        </div>
+
+        <div class="share-container">
+          <p class="share-label">Share your score:</p>
+          <div class="share-buttons">
+            <button
+              class="share-btn twitter"
+              onclick="shareOnTwitter()"
+              aria-label="Share on Twitter"
+            >
+              <svg class="share-icon" viewBox="0 0 24 24">
+                <path
+                  d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"
+                />
+              </svg>
+            </button>
+            <button
+              class="share-btn facebook"
+              onclick="shareOnFacebook()"
+              aria-label="Share on Facebook"
+            >
+              <svg class="share-icon" viewBox="0 0 24 24">
+                <path
+                  d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"
+                />
+              </svg>
+            </button>
+            <button
+              class="share-btn copy"
+              onclick="copyScore()"
+              aria-label="Copy score to clipboard"
+            >
+              <svg class="share-icon" viewBox="0 0 24 24">
+                <path
+                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
